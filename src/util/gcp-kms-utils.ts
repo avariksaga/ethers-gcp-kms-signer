@@ -21,19 +21,21 @@ const EcdsaPubKey = asn1.define("EcdsaPubKey", function (this: any) {
 });
 /* eslint-enable func-names */
 
-function getClientCredentials() {
-  return process.env.GOOGLE_APPLICATION_CREDENTIAL_EMAIL && process.env.GOOGLE_APPLICATION_CREDENTIAL_PRIVATE_KEY
-    ? {
-        credentials: {
-          client_email: process.env.GOOGLE_APPLICATION_CREDENTIAL_EMAIL,
-          private_key: process.env.GOOGLE_APPLICATION_CREDENTIAL_PRIVATE_KEY.replace(/\\n/gm, "\n"),
-        },
-      }
-    : {};
+function getClientCredentials(serviceAccount?: any) {
+  if (!serviceAccount) {
+    return {};
+  }
+
+  return {
+    credentials: {
+      client_email: serviceAccount.client_email,
+      private_key: serviceAccount.private_key.replace(/\\n/gm, "\n"),
+    }
+  }
 }
 
 export async function sign(digest: Buffer, kmsCredentials: GcpKmsSignerCredentials) {
-  const kms = new KeyManagementServiceClient(getClientCredentials());
+  const kms = new KeyManagementServiceClient(getClientCredentials(kmsCredentials.serviceAccount));
   const versionName = kms.cryptoKeyVersionPath(
     kmsCredentials.projectId,
     kmsCredentials.locationId,
@@ -51,7 +53,7 @@ export async function sign(digest: Buffer, kmsCredentials: GcpKmsSignerCredentia
 }
 
 export const getPublicKey = async (kmsCredentials: GcpKmsSignerCredentials) => {
-  const kms = new KeyManagementServiceClient(getClientCredentials());
+  const kms = new KeyManagementServiceClient(getClientCredentials(kmsCredentials.serviceAccount));
   const versionName = kms.cryptoKeyVersionPath(
     kmsCredentials.projectId,
     kmsCredentials.locationId,
