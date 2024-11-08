@@ -20,6 +20,7 @@ const kmsCredentials = {
   keyRingId: process.env.KMS_KEY_RING_ID,
   keyId: process.env.KMS_KEY_ID,
   keyVersion: process.env.KMS_KEY_VERSION,
+  serviceAccount: process.env.KMS_SERVICE_ACCOUNT,
 };
 
 describe.skip("sign with Google KMS", () => {
