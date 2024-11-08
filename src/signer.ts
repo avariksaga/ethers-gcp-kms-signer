@@ -23,6 +23,7 @@ export interface GcpKmsSignerCredentials {
   keyRingId: string;
   keyId: string;
   keyVersion: string;
+  serviceAccount: any;
 }
 
 export class GcpKmsSigner extends ethers.Signer {
